@@ -12,6 +12,12 @@
     },
     "actions": {
       "logout": "Sair"
+    },
+    "logout": {
+      "confirmTitle": "Confirmar Saída",
+      "confirmMessage": "Tem certeza que deseja sair do aplicativo?",
+      "confirmButton": "Sair",
+      "cancelButton": "Cancelar"
     }
   }
 }

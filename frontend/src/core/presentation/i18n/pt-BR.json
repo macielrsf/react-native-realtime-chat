@@ -10,6 +10,12 @@
       "close": "Fechar",
       "back": "Voltar"
     },
+    "confirmations": {
+      "areYouSure": "Tem certeza?",
+      "thisActionCannotBeUndone": "Esta ação não pode ser desfeita.",
+      "yes": "Sim",
+      "no": "Não"
+    },
     "language": {
       "current": "Idioma atual",
       "portuguese": "Português (Brasil)",

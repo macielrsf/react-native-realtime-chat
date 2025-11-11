@@ -12,6 +12,12 @@
     },
     "actions": {
       "logout": "Logout"
+    },
+    "logout": {
+      "confirmTitle": "Confirm Logout",
+      "confirmMessage": "Are you sure you want to sign out of the app?",
+      "confirmButton": "Sign Out",
+      "cancelButton": "Cancel"
     }
   }
 }

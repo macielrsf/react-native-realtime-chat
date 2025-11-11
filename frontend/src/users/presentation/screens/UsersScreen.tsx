@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
+  Alert,
 } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../../core/presentation/navigation/types';
@@ -64,9 +65,42 @@ export const UsersScreen: React.FC<Props> = ({ navigation }) => {
   const { theme } = useTheme();
   const { t } = useLanguage();
 
+  // For custom modal implementation (alternative):
+  // const [showLogoutModal, setShowLogoutModal] = useState(false);
+
   const handleLogout = React.useCallback(() => {
-    logout();
-  }, [logout]);
+    // Native Alert Implementation (Current)
+    Alert.alert(
+      t('users.logout.confirmTitle'),
+      t('users.logout.confirmMessage'),
+      [
+        {
+          text: t('users.logout.cancelButton'),
+          style: 'cancel',
+        },
+        {
+          text: t('users.logout.confirmButton'),
+          style: 'destructive',
+          onPress: () => {
+            logout();
+          },
+        },
+      ],
+    );
+
+    // Alternative: Custom Modal Implementation
+    // setShowLogoutModal(true);
+  }, [logout, t]);
+
+  // For custom modal implementation:
+  // const confirmLogout = () => {
+  //   setShowLogoutModal(false);
+  //   logout();
+  // };
+
+  // const cancelLogout = () => {
+  //   setShowLogoutModal(false);
+  // };
 
   const headerRight = React.useMemo(
     () => <HeaderRight onLogout={handleLogout} />,

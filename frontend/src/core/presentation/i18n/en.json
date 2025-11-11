@@ -10,6 +10,12 @@
       "close": "Close",
       "back": "Back"
     },
+    "confirmations": {
+      "areYouSure": "Are you sure?",
+      "thisActionCannotBeUndone": "This action cannot be undone.",
+      "yes": "Yes",
+      "no": "No"
+    },
     "language": {
       "current": "Current language",
       "portuguese": "Português (Brasil)",
