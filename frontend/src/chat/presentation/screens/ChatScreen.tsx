@@ -33,6 +33,7 @@ export const ChatScreen: React.FC<Props> = ({ route }) => {
   const { user } = route.params;
   const [inputText, setInputText] = useState('');
   const flatListRef = useRef<FlatList>(null);
+  const inputRef = useRef<RNTextInput>(null);
   const typingTimeoutRef = useRef<number | null>(null);
   const { markConversationAsRead } = useUnreadCounts();
   const { theme } = useTheme();
@@ -73,6 +74,10 @@ export const ChatScreen: React.FC<Props> = ({ route }) => {
 
     try {
       await sendMessage(messageText);
+      // Manter foco no input após enviar
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 100);
     } catch (error) {
       console.error('Failed to send message:', error);
     }
@@ -93,6 +98,12 @@ export const ChatScreen: React.FC<Props> = ({ route }) => {
       }, 2000);
     } else {
       stopTyping();
+    }
+  };
+
+  const handleSubmitEditing = () => {
+    if (inputText.trim()) {
+      handleSend();
     }
   };
 
@@ -133,15 +144,20 @@ export const ChatScreen: React.FC<Props> = ({ route }) => {
         ]}
       >
         <RNTextInput
+          ref={inputRef}
           style={[
             styles.input,
             { borderColor: theme.border, color: theme.text.primary },
           ]}
           value={inputText}
           onChangeText={handleTextChange}
+          onSubmitEditing={handleSubmitEditing}
           placeholder={t('chat.input.placeholder')}
           placeholderTextColor={theme.text.tertiary}
-          multiline
+          multiline={false}
+          returnKeyType="send"
+          enablesReturnKeyAutomatically={true}
+          blurOnSubmit={false}
           maxLength={1000}
         />
         <TouchableOpacity
@@ -187,7 +203,7 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     flexDirection: 'row',
-    alignItems: 'flex-end',
+    alignItems: 'center',
     padding: spacing.md,
     borderTopWidth: 1,
   },
@@ -199,7 +215,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
     marginRight: spacing.sm,
-    maxHeight: 100,
+    height: 40,
   },
   sendButton: {
     borderRadius: 20,

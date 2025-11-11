@@ -2,7 +2,11 @@
   "chat": {
     "input": {
       "placeholder": "Type a message...",
-      "send": "Send"
+      "send": "Send",
+      "multilineMode": "Multiline mode",
+      "singlelineMode": "Single line mode",
+      "pressEnterToSend": "Press Enter to send",
+      "shiftEnterNewLine": "Shift+Enter for new line"
     },
     "typing": {
       "indicator": "is typing..."
