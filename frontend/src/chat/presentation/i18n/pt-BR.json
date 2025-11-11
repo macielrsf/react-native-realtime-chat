@@ -15,6 +15,13 @@
       "loading": "Carregando conversa...",
       "sending": "Enviando...",
       "failed": "Falha ao enviar mensagem"
+    },
+    "message": {
+      "sending": "Enviando...",
+      "sent": "Enviado",
+      "delivered": "Entregue",
+      "failed": "Falhou",
+      "retry": "Tentar novamente"
     }
   }
 }

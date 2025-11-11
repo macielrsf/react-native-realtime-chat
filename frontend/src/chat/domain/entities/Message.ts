@@ -1,4 +1,6 @@
 // frontend/src/chat/domain/entities/Message.ts
+export type MessageStatus = 'sending' | 'sent' | 'delivered' | 'failed';
+
 export class Message {
   constructor(
     public readonly id: string,
@@ -8,6 +10,7 @@ export class Message {
     public readonly delivered: boolean,
     public readonly deliveredAt: Date | null,
     public readonly createdAt: Date,
+    public status?: MessageStatus, // Optional for backwards compatibility
   ) {}
 
   static create(data: {
@@ -18,6 +21,7 @@ export class Message {
     delivered: boolean;
     deliveredAt?: string;
     createdAt: string;
+    status?: MessageStatus;
   }): Message {
     return new Message(
       data.id,
@@ -27,10 +31,24 @@ export class Message {
       data.delivered,
       data.deliveredAt ? new Date(data.deliveredAt) : null,
       new Date(data.createdAt),
+      data.status || (data.delivered ? 'delivered' : 'sent'),
     );
   }
 
   isFromMe(userId: string): boolean {
     return this.from === userId;
+  }
+
+  withStatus(status: MessageStatus): Message {
+    return new Message(
+      this.id,
+      this.from,
+      this.to,
+      this.body,
+      this.delivered,
+      this.deliveredAt,
+      this.createdAt,
+      status,
+    );
   }
 }

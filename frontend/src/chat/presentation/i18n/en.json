@@ -15,6 +15,13 @@
       "loading": "Loading conversation...",
       "sending": "Sending...",
       "failed": "Failed to send message"
+    },
+    "message": {
+      "sending": "Sending...",
+      "sent": "Sent",
+      "delivered": "Delivered",
+      "failed": "Failed",
+      "retry": "Retry"
     }
   }
 }

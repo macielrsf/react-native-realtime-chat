@@ -10,10 +10,12 @@ import {
   TouchableOpacity,
   Text,
   ActivityIndicator,
+  Alert,
 } from 'react-native';
 import { RouteProp } from '@react-navigation/native';
 import { RootStackParamList } from '../../../core/presentation/navigation/types';
 import { useChatViewModel } from '../viewmodels/useChatViewModel';
+import { useSendMessage } from '../hooks/useSendMessage';
 import { useUnreadCounts } from '../../../shared/hooks/useUnreadCounts';
 import { MessageBubble } from '../../../core/presentation/components/MessageBubble';
 import { TypingIndicator } from '../../../core/presentation/components/TypingIndicator';
@@ -45,10 +47,28 @@ export const ChatScreen: React.FC<Props> = ({ route }) => {
     isLoading,
     currentUserId,
     loadHistory,
-    sendMessage,
     startTyping,
     stopTyping,
   } = useChatViewModel(user.id);
+
+  const {
+    sendMessage,
+    retryMessage,
+    pendingMessages,
+    pendingMessagesAsMessages,
+  } = useSendMessage(currentUserId, user.id);
+
+  // Combine regular messages with pending messages
+  const allMessages = React.useMemo(() => {
+    // Filter out duplicates and combine
+    const messageIds = new Set(messages.map(m => m.id));
+    const uniquePending = pendingMessagesAsMessages.filter(
+      pm => !messageIds.has(pm.id),
+    );
+    return [...messages, ...uniquePending].sort(
+      (a, b) => a.createdAt.getTime() - b.createdAt.getTime(),
+    );
+  }, [messages, pendingMessagesAsMessages]);
 
   useEffect(() => {
     loadHistory();
@@ -58,12 +78,12 @@ export const ChatScreen: React.FC<Props> = ({ route }) => {
 
   useEffect(() => {
     // Scroll to bottom when new messages arrive
-    if (messages.length > 0) {
+    if (allMessages.length > 0) {
       setTimeout(() => {
         flatListRef.current?.scrollToEnd({ animated: true });
       }, 100);
     }
-  }, [messages]);
+  }, [allMessages]);
 
   const handleSend = async () => {
     if (!inputText.trim()) return;
@@ -73,7 +93,14 @@ export const ChatScreen: React.FC<Props> = ({ route }) => {
     stopTyping();
 
     try {
-      await sendMessage(messageText);
+      const result = await sendMessage(messageText);
+      if (!result) {
+        // Failed - show alert
+        Alert.alert(t('core.common.error'), t('chat.status.failed'), [
+          { text: 'OK' },
+        ]);
+      }
+
       // Manter foco no input após enviar
       setTimeout(() => {
         inputRef.current?.focus();
@@ -107,9 +134,21 @@ export const ChatScreen: React.FC<Props> = ({ route }) => {
     }
   };
 
-  const renderMessage = ({ item }: { item: Message }) => (
-    <MessageBubble message={item} isFromMe={item.isFromMe(currentUserId)} />
-  );
+  const renderMessage = ({ item }: { item: Message }) => {
+    const pending = pendingMessages.find(p => p.tempId === item.id);
+
+    return (
+      <MessageBubble
+        message={item}
+        isFromMe={item.isFromMe(currentUserId)}
+        onRetry={
+          pending && pending.status === 'failed'
+            ? () => retryMessage(pending.tempId)
+            : undefined
+        }
+      />
+    );
+  };
 
   return (
     <KeyboardAvoidingView
@@ -117,7 +156,7 @@ export const ChatScreen: React.FC<Props> = ({ route }) => {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
     >
-      {isLoading && messages.length === 0 ? (
+      {isLoading && allMessages.length === 0 ? (
         <View
           style={[
             styles.loadingContainer,
@@ -129,7 +168,7 @@ export const ChatScreen: React.FC<Props> = ({ route }) => {
       ) : (
         <FlatList
           ref={flatListRef}
-          data={messages}
+          data={allMessages}
           renderItem={renderMessage}
           keyExtractor={item => item.id}
           contentContainerStyle={styles.messageList}

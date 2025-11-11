@@ -89,32 +89,55 @@ export class ChatSocketHandler {
     socket: AuthenticatedSocket,
     data: { toUserId: string; body: string }
   ): Promise<void> {
+    const startTime = Date.now();
     try {
       if (!socket.userId) return;
 
       const { toUserId, body } = data;
 
       if (!body || !body.trim()) {
+        logger.warn(`Empty message body from user ${socket.userId}`);
         socket.emit("error", { message: "Message body is required" });
         return;
       }
 
+      logger.info(
+        `[Message Send] Starting - From: ${socket.userId}, To: ${toUserId}, Body length: ${body.length}`
+      );
+
+      const messageCreateStart = Date.now();
       const message = await this.chatService.createMessage(
         socket.userId,
         toUserId,
         body.trim()
+      );
+      logger.info(
+        `[Message Send] Message created in ${
+          Date.now() - messageCreateStart
+        }ms, ID: ${message.id}`
       );
 
       // Send to recipient if online
       const recipientSocketId = this.userSocketMap.get(toUserId);
 
       if (recipientSocketId) {
+        logger.info(
+          `[Message Send] Recipient ${toUserId} is online, sending message`
+        );
+
         this.io.to(recipientSocketId).emit("message:new", { message });
 
         // Send updated unread count to recipient
+        const unreadCountsStart = Date.now();
         const unreadCounts = await this.chatService.getUserUnreadCounts(
           toUserId
         );
+        logger.info(
+          `[Message Send] Unread counts fetched in ${
+            Date.now() - unreadCountsStart
+          }ms`
+        );
+
         this.io
           .to(recipientSocketId)
           .emit("unreadCounts:updated", { unreadCounts });
@@ -131,13 +154,23 @@ export class ChatSocketHandler {
         });
 
         // Mark as delivered
+        const deliveryStart = Date.now();
         await this.chatService.markAsDelivered(message.id);
+        logger.info(
+          `[Message Send] Marked as delivered in ${
+            Date.now() - deliveryStart
+          }ms`
+        );
 
         // Notify sender about delivery
         socket.emit("message:delivered", {
           messageId: message.id,
           timestamp: new Date().toISOString(),
         });
+      } else {
+        logger.info(
+          `[Message Send] Recipient ${toUserId} is offline, message saved`
+        );
       }
 
       // Send confirmation to sender
@@ -154,9 +187,16 @@ export class ChatSocketHandler {
         },
       });
 
-      logger.info(`Message sent from ${socket.userId} to ${toUserId}`);
+      const totalTime = Date.now() - startTime;
+      logger.info(
+        `[Message Send] Completed in ${totalTime}ms - Message ID: ${message.id}`
+      );
     } catch (error) {
-      logger.error(`Error sending message: ${error}`);
+      const totalTime = Date.now() - startTime;
+      logger.error(
+        `[Message Send] Error after ${totalTime}ms: ${error}`,
+        error
+      );
       socket.emit("error", { message: "Failed to send message" });
     }
   }

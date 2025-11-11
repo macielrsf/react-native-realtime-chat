@@ -2,6 +2,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Message } from '../../../chat/domain/entities/Message';
+import { MessageStatus } from './MessageStatus';
 import { useTheme } from '../theme/ThemeContext';
 import { spacing } from '../theme/spacing';
 import { typography } from '../theme/typography';
@@ -9,11 +10,13 @@ import { typography } from '../theme/typography';
 interface MessageBubbleProps {
   message: Message;
   isFromMe: boolean;
+  onRetry?: () => void;
 }
 
 export const MessageBubble: React.FC<MessageBubbleProps> = ({
   message,
   isFromMe,
+  onRetry,
 }) => {
   const { theme } = useTheme();
 
@@ -42,17 +45,22 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
         >
           {message.body}
         </Text>
-        <Text
-          style={[
-            styles.time,
-            isFromMe ? styles.timeSent : { color: theme.text.tertiary },
-          ]}
-        >
-          {message.createdAt.toLocaleTimeString([], {
-            hour: '2-digit',
-            minute: '2-digit',
-          })}
-        </Text>
+        <View style={styles.footer}>
+          <Text
+            style={[
+              styles.time,
+              isFromMe ? styles.timeSent : { color: theme.text.tertiary },
+            ]}
+          >
+            {message.createdAt.toLocaleTimeString([], {
+              hour: '2-digit',
+              minute: '2-digit',
+            })}
+          </Text>
+          {isFromMe && message.status && (
+            <MessageStatus status={message.status} onRetry={onRetry} />
+          )}
+        </View>
       </View>
     </View>
   );
@@ -84,9 +92,14 @@ const styles = StyleSheet.create({
   text: {
     ...typography.body,
   },
+  footer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: spacing.xs,
+    gap: spacing.xs,
+  },
   time: {
     ...typography.small,
-    marginTop: spacing.xs,
   },
   timeSent: {
     color: 'rgba(255, 255, 255, 0.7)',
