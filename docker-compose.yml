@@ -1,0 +1,44 @@
+# docker-compose.yml
+version: "3.8"
+
+services:
+  mongo:
+    image: mongo:7
+    container_name: rn_chat_mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    environment:
+      MONGO_INITDB_DATABASE: rn_chat
+    networks:
+      - rn_chat_network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: rn_chat_backend
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    depends_on:
+      - mongo
+    environment:
+      - NODE_ENV=development
+    env_file:
+      - ./backend/.env
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    networks:
+      - rn_chat_network
+    command: npm run dev
+
+volumes:
+  mongo_data:
+
+networks:
+  rn_chat_network:
+    driver: bridge
