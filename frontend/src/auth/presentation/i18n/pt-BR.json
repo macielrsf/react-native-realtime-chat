@@ -1,0 +1,19 @@
+{
+  "auth": {
+    "login": {
+      "title": "Bem-vindo de Volta",
+      "subtitle": "Faça login para continuar",
+      "username": "Nome de usuário",
+      "password": "Senha",
+      "usernamePlace": "Digite seu nome de usuário",
+      "passwordPlace": "Digite sua senha",
+      "signIn": "Entrar",
+      "signInLoading": "Entrando..."
+    },
+    "errors": {
+      "emptyFields": "Por favor, insira nome de usuário e senha",
+      "invalidCredentials": "Credenciais inválidas",
+      "loginFailed": "Falha no Login"
+    }
+  }
+}

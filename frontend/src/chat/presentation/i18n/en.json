@@ -1,0 +1,16 @@
+{
+  "chat": {
+    "input": {
+      "placeholder": "Type a message...",
+      "send": "Send"
+    },
+    "typing": {
+      "indicator": "is typing..."
+    },
+    "status": {
+      "loading": "Loading conversation...",
+      "sending": "Sending...",
+      "failed": "Failed to send message"
+    }
+  }
+}

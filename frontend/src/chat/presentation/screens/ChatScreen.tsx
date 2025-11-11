@@ -19,6 +19,7 @@ import { MessageBubble } from '../../../core/presentation/components/MessageBubb
 import { TypingIndicator } from '../../../core/presentation/components/TypingIndicator';
 import { Message } from '../../domain/entities/Message';
 import { useTheme } from '../../../core/presentation/theme/ThemeContext';
+import { useLanguage } from '../../../shared/i18n';
 import { spacing } from '../../../core/presentation/theme/spacing';
 import { typography } from '../../../core/presentation/theme/typography';
 
@@ -35,6 +36,7 @@ export const ChatScreen: React.FC<Props> = ({ route }) => {
   const typingTimeoutRef = useRef<number | null>(null);
   const { markConversationAsRead } = useUnreadCounts();
   const { theme } = useTheme();
+  const { t } = useLanguage();
 
   const {
     messages,
@@ -137,7 +139,7 @@ export const ChatScreen: React.FC<Props> = ({ route }) => {
           ]}
           value={inputText}
           onChangeText={handleTextChange}
-          placeholder="Type a message..."
+          placeholder={t('chat.input.placeholder')}
           placeholderTextColor={theme.text.tertiary}
           multiline
           maxLength={1000}
@@ -163,7 +165,7 @@ export const ChatScreen: React.FC<Props> = ({ route }) => {
               },
             ]}
           >
-            Send
+            {t('chat.input.send')}
           </Text>
         </TouchableOpacity>
       </View>

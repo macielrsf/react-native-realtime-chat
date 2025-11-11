@@ -15,9 +15,11 @@ import { useAuthViewModel } from '../../../auth/presentation/viewmodels/useAuthV
 import { Avatar } from '../../../core/presentation/components/Avatar';
 import { UnreadBadge } from '../../../core/presentation/components/UnreadBadge';
 import { ThemeToggle } from '../../../core/presentation/components/ThemeToggle';
+import { LanguageSwitcher } from '../../../core/presentation/components/LanguageSwitcher';
 import { useUnreadCounts } from '../../../shared/hooks/useUnreadCounts';
 import { UserSummary } from '../../domain/entities/UserSummary';
 import { useTheme } from '../../../core/presentation/theme/ThemeContext';
+import { useLanguage } from '../../../shared/i18n';
 import { spacing } from '../../../core/presentation/theme/spacing';
 import { typography } from '../../../core/presentation/theme/typography';
 
@@ -32,6 +34,7 @@ interface Props {
 
 const LogoutButton: React.FC<{ onPress: () => void }> = ({ onPress }) => {
   const { theme } = useTheme();
+  const { t } = useLanguage();
 
   return (
     <TouchableOpacity
@@ -39,13 +42,16 @@ const LogoutButton: React.FC<{ onPress: () => void }> = ({ onPress }) => {
       style={styles.logoutButton}
       activeOpacity={0.7}
     >
-      <Text style={[styles.logoutText, { color: theme.danger }]}>Logout</Text>
+      <Text style={[styles.logoutText, { color: theme.danger }]}>
+        {t('users.actions.logout')}
+      </Text>
     </TouchableOpacity>
   );
 };
 
 const HeaderRight: React.FC<{ onLogout: () => void }> = ({ onLogout }) => (
   <View style={styles.headerRight}>
+    <LanguageSwitcher />
     <ThemeToggle />
     <LogoutButton onPress={onLogout} />
   </View>
@@ -56,6 +62,7 @@ export const UsersScreen: React.FC<Props> = ({ navigation }) => {
   const { logout } = useAuthViewModel();
   const { unreadCounts, markConversationAsRead } = useUnreadCounts();
   const { theme } = useTheme();
+  const { t } = useLanguage();
 
   const handleLogout = React.useCallback(() => {
     logout();
@@ -111,7 +118,7 @@ export const UsersScreen: React.FC<Props> = ({ navigation }) => {
             {item.name}
           </Text>
           <Text style={[styles.userStatus, { color: theme.text.tertiary }]}>
-            {item.online ? 'Online' : 'Offline'}
+            {item.online ? t('users.status.online') : t('users.status.offline')}
           </Text>
         </View>
 
@@ -143,7 +150,7 @@ export const UsersScreen: React.FC<Props> = ({ navigation }) => {
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
             <Text style={[styles.emptyText, { color: theme.text.tertiary }]}>
-              No users found
+              {t('users.list.empty')}
             </Text>
           </View>
         }

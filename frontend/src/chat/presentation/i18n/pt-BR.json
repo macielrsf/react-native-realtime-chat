@@ -1,0 +1,16 @@
+{
+  "chat": {
+    "input": {
+      "placeholder": "Digite uma mensagem...",
+      "send": "Enviar"
+    },
+    "typing": {
+      "indicator": "está digitando..."
+    },
+    "status": {
+      "loading": "Carregando conversa...",
+      "sending": "Enviando...",
+      "failed": "Falha ao enviar mensagem"
+    }
+  }
+}

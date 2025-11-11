@@ -7,6 +7,7 @@ import {
   ThemeProvider,
   useTheme,
 } from '../core/presentation/theme/ThemeContext';
+import { LanguageProvider } from '../shared/i18n';
 
 const AppContent: React.FC = () => {
   const { theme, isDark } = useTheme();
@@ -28,9 +29,11 @@ const AppContent: React.FC = () => {
 
 const App: React.FC = () => {
   return (
-    <ThemeProvider>
-      <AppContent />
-    </ThemeProvider>
+    <LanguageProvider>
+      <ThemeProvider>
+        <AppContent />
+      </ThemeProvider>
+    </LanguageProvider>
   );
 };
 

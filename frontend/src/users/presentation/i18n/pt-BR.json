@@ -1,0 +1,17 @@
+{
+  "users": {
+    "list": {
+      "title": "Usuários",
+      "empty": "Nenhum usuário encontrado",
+      "refreshing": "Atualizando...",
+      "loading": "Carregando usuários..."
+    },
+    "status": {
+      "online": "Online",
+      "offline": "Offline"
+    },
+    "actions": {
+      "logout": "Sair"
+    }
+  }
+}

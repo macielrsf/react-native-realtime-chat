@@ -1,0 +1,19 @@
+{
+  "auth": {
+    "login": {
+      "title": "Welcome Back",
+      "subtitle": "Sign in to continue",
+      "username": "Username",
+      "password": "Password",
+      "usernamePlace": "Enter your username",
+      "passwordPlace": "Enter your password",
+      "signIn": "Sign In",
+      "signInLoading": "Signing In..."
+    },
+    "errors": {
+      "emptyFields": "Please enter username and password",
+      "invalidCredentials": "Invalid credentials",
+      "loginFailed": "Login Failed"
+    }
+  }
+}

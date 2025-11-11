@@ -1,0 +1,25 @@
+{
+  "core": {
+    "common": {
+      "loading": "Loading...",
+      "error": "Error",
+      "retry": "Retry",
+      "cancel": "Cancel",
+      "confirm": "Confirm",
+      "save": "Save",
+      "close": "Close",
+      "back": "Back"
+    },
+    "language": {
+      "current": "Current language",
+      "portuguese": "Português (Brasil)",
+      "english": "English",
+      "change": "Change language"
+    },
+    "theme": {
+      "light": "Light",
+      "dark": "Dark",
+      "toggle": "Toggle theme"
+    }
+  }
+}

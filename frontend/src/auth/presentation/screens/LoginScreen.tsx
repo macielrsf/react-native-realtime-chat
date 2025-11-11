@@ -13,6 +13,7 @@ import { TextInput } from '../../../core/presentation/components/TextInput';
 import { Button } from '../../../core/presentation/components/Button';
 import { useAuthViewModel } from '../viewmodels/useAuthViewModel';
 import { useTheme } from '../../../core/presentation/theme/ThemeContext';
+import { useLanguage } from '../../../shared/i18n';
 import { spacing } from '../../../core/presentation/theme/spacing';
 import { typography } from '../../../core/presentation/theme/typography';
 
@@ -21,17 +22,21 @@ export const LoginScreen: React.FC = () => {
   const [password, setPassword] = useState('');
   const { login, isLoading, error } = useAuthViewModel();
   const { theme } = useTheme();
+  const { t } = useLanguage();
 
   const handleLogin = async () => {
     if (!username.trim() || !password.trim()) {
-      Alert.alert('Error', 'Please enter username and password');
+      Alert.alert(t('core.common.error'), t('auth.errors.emptyFields'));
       return;
     }
 
     const success = await login(username.trim(), password);
 
     if (!success) {
-      Alert.alert('Login Failed', error || 'Invalid credentials');
+      Alert.alert(
+        t('auth.errors.loginFailed'),
+        error || t('auth.errors.invalidCredentials'),
+      );
     }
     // Navegação automática: quando isAuthenticated=true, Navigation renderiza Users Stack
   };
@@ -47,31 +52,37 @@ export const LoginScreen: React.FC = () => {
       >
         <View style={styles.header}>
           <Text style={[styles.title, { color: theme.text.primary }]}>
-            Welcome Back
+            {t('auth.login.title')}
           </Text>
           <Text style={[styles.subtitle, { color: theme.text.secondary }]}>
-            Sign in to continue
+            {t('auth.login.subtitle')}
           </Text>
         </View>
 
         <View style={styles.form}>
           <TextInput
-            label="Username"
+            label={t('auth.login.username')}
             value={username}
             onChangeText={setUsername}
-            placeholder="Enter your username"
+            placeholder={t('auth.login.usernamePlace')}
             autoCapitalize="none"
           />
 
           <TextInput
-            label="Password"
+            label={t('auth.login.password')}
             value={password}
             onChangeText={setPassword}
-            placeholder="Enter your password"
+            placeholder={t('auth.login.passwordPlace')}
             secureTextEntry
           />
 
-          <Button title="Sign In" onPress={handleLogin} loading={isLoading} />
+          <Button
+            title={
+              isLoading ? t('auth.login.signInLoading') : t('auth.login.signIn')
+            }
+            onPress={handleLogin}
+            loading={isLoading}
+          />
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
