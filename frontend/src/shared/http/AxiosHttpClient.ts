@@ -1,10 +1,11 @@
 // frontend/src/shared/http/AxiosHttpClient.ts
-import axios, { AxiosInstance } from 'axios';
+import axios, { AxiosInstance, AxiosError } from 'axios';
 import { HttpClient } from './HttpClient';
 import { env } from '../config/env';
 
 export class AxiosHttpClient implements HttpClient {
   private axiosInstance: AxiosInstance;
+  private onUnauthorized?: () => void;
 
   constructor() {
     this.axiosInstance = axios.create({
@@ -14,16 +15,34 @@ export class AxiosHttpClient implements HttpClient {
         'Content-Type': 'application/json',
       },
     });
+
+    this.setupInterceptors();
   }
 
   setAuthToken(token: string | null): void {
     if (token) {
-      this.axiosInstance.defaults.headers.common[
-        'Authorization'
-      ] = `Bearer ${token}`;
+      this.axiosInstance.defaults.headers.common.Authorization = `Bearer ${token}`;
     } else {
-      delete this.axiosInstance.defaults.headers.common['Authorization'];
+      delete this.axiosInstance.defaults.headers.common.Authorization;
     }
+  }
+
+  setUnauthorizedHandler(handler: () => void): void {
+    this.onUnauthorized = handler;
+  }
+
+  private setupInterceptors(): void {
+    // Response interceptor para capturar erros 401
+    this.axiosInstance.interceptors.response.use(
+      (response) => response,
+      (error: AxiosError) => {
+        if (error.response?.status === 401) {
+          console.warn('Token expirado ou inválido - redirecionando para login');
+          this.onUnauthorized?.();
+        }
+        return Promise.reject(error);
+      }
+    );
   }
 
   async get<T>(url: string, config?: any): Promise<T> {

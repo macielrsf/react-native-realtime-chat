@@ -63,6 +63,9 @@ class DIContainer {
     this.tokenStorage = new SecureStorage();
     this.socketClient = new SocketClient();
 
+    // Configure unauthorized handler
+    this.setupUnauthorizedHandler();
+
     // Auth
     this.authApi = new AuthApi(this.httpClient);
     this.authRepository = new AuthRepositoryHttp(this.authApi);
@@ -93,6 +96,49 @@ class DIContainer {
       this.unreadCountApi,
     );
     this.markAsReadUseCase = new MarkAsReadUseCase(this.unreadCountApi);
+  }
+
+  private setupUnauthorizedHandler(): void {
+    this.httpClient.setUnauthorizedHandler(async () => {
+      console.warn('Token expirado - realizando logout automático');
+      
+      try {
+        // Limpar tokens
+        await this.tokenStorage.clearTokens();
+
+        // Remover token do HTTP client
+        this.httpClient.setAuthToken(null);
+        
+        // Desconectar socket
+        this.socketClient.disconnect();
+
+        // Limpar todos os estados
+        const { useAuthStore, useUsersStore, useChatStore, useUnreadCountStore } = await import('../state/store');
+        
+        // Limpar estados
+        useAuthStore.getState().clearAuth();
+        useUsersStore.getState().setUsers([]);
+        useUsersStore.getState().setError(null);
+        useChatStore.setState({ messages: {}, typingUsers: new Set(), error: null });
+        useUnreadCountStore.setState({ 
+          unreadCounts: {}, 
+          totalCount: 0,
+          isLoading: false 
+        });
+
+        console.log('Logout automático concluído - redirecionando para login');
+        
+        // Mostrar alerta de sessão expirada
+        const { Alert } = await import('react-native');
+        Alert.alert(
+          'Sessão Expirada',
+          'Sua sessão expirou. Por favor, faça login novamente.',
+          [{ text: 'OK' }]
+        );
+      } catch (error) {
+        console.error('Erro durante logout automático:', error);
+      }
+    });
   }
 }
 

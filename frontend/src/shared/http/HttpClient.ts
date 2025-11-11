@@ -5,4 +5,5 @@ export interface HttpClient {
   put<T>(url: string, data?: any, config?: any): Promise<T>;
   delete<T>(url: string, config?: any): Promise<T>;
   setAuthToken(token: string | null): void;
+  setUnauthorizedHandler(handler: () => void): void;
 }

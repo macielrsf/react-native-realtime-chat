@@ -2,6 +2,7 @@
 import { useCallback } from 'react';
 import { useAuthStore } from '../../../shared/state/store';
 import { container } from '../../../shared/di/container';
+import { useAutoLogout } from '../../../shared/hooks/useAutoLogout';
 
 export const useAuthViewModel = () => {
   const {
@@ -15,6 +16,8 @@ export const useAuthViewModel = () => {
     setLoading,
     setError,
   } = useAuthStore();
+
+  const { logout: performLogout } = useAutoLogout();
 
   const login = useCallback(
     async (username: string, password: string) => {
@@ -45,11 +48,8 @@ export const useAuthViewModel = () => {
   );
 
   const logout = useCallback(async () => {
-    container.socketClient.disconnect();
-    container.httpClient.setAuthToken(null);
-    await container.tokenStorage.clearTokens();
-    clearAuth();
-  }, [clearAuth]);
+    performLogout();
+  }, [performLogout]);
 
   const restoreSession = useCallback(async () => {
     try {
