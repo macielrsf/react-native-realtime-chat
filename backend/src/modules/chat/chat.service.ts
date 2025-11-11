@@ -94,6 +94,60 @@ export class ChatService {
     return await this.unreadCountService.getTotalUnreadCount(userId);
   }
 
+  /**
+   * Busca conversas com a última mensagem para um usuário
+   */
+  async getUserConversationsWithLastMessage(userId: string) {
+    try {
+      // Busca todas as mensagens do usuário, ordenadas por data
+      const messages = await MessageModel.find({
+        $or: [
+          { from: new mongoose.Types.ObjectId(userId) },
+          { to: new mongoose.Types.ObjectId(userId) },
+        ],
+      })
+        .populate("from", "name username")
+        .populate("to", "name username")
+        .sort({ createdAt: -1 })
+        .lean();
+
+      // Agrupa por conversação e pega a última mensagem
+      const conversationMap = new Map();
+
+      for (const message of messages) {
+        const isFromMe = (message.from as any)._id.toString() === userId;
+        const conversationWithId = isFromMe
+          ? (message.to as any)._id.toString()
+          : (message.from as any)._id.toString();
+
+        if (!conversationMap.has(conversationWithId)) {
+          conversationMap.set(conversationWithId, {
+            conversationWith: {
+              id: conversationWithId,
+              name: isFromMe
+                ? (message.to as any).name
+                : (message.from as any).name,
+              username: isFromMe
+                ? (message.to as any).username
+                : (message.from as any).username,
+            },
+            lastMessage: {
+              id: message._id.toString(),
+              body: message.body,
+              createdAt: (message.createdAt as Date).toISOString(),
+              isFromMe: isFromMe,
+            },
+          });
+        }
+      }
+
+      return Array.from(conversationMap.values());
+    } catch (error) {
+      console.error("Error fetching conversations with last message:", error);
+      return [];
+    }
+  }
+
   private mapMessageToDto(message: IMessage): MessageDto {
     return {
       id: message._id.toString(),

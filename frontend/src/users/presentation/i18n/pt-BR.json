@@ -10,6 +10,9 @@
       "online": "Online",
       "offline": "Offline"
     },
+    "lastMessage": {
+      "you": "Você"
+    },
     "actions": {
       "logout": "Sair"
     },

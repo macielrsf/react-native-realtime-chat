@@ -13,6 +13,15 @@ export type SocketEventHandler = {
   onUnreadCountsUpdated?: (data: {
     unreadCounts: Array<{ conversationWith: string; count: number }>;
   }) => void;
+  onConversationUpdated?: (data: {
+    userId: string;
+    lastMessage: {
+      id: string;
+      body: string;
+      createdAt: string;
+      isFromCurrentUser: boolean;
+    };
+  }) => void;
   onError?: (data: { message: string }) => void;
 };
 
@@ -92,6 +101,10 @@ export class SocketClient {
 
     this.socket.on('unreadCounts:updated', data => {
       this.handlers.onUnreadCountsUpdated?.(data);
+    });
+
+    this.socket.on('conversation:updated', data => {
+      this.handlers.onConversationUpdated?.(data);
     });
 
     this.socket.on('error', data => {

@@ -9,6 +9,9 @@ const chatController = new ChatController();
 router.get("/:userId/messages", isAuthenticated, (req, res, next) =>
   chatController.getMessages(req as any, res, next)
 );
+router.get("/conversations", isAuthenticated, (req, res, next) =>
+  chatController.getConversationsWithLastMessage(req as any, res, next)
+);
 router.get("/unread-counts", isAuthenticated, (req, res, next) =>
   chatController.getUnreadCounts(req as any, res, next)
 );

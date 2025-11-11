@@ -4,6 +4,7 @@ import React, {
   useEffect,
   useLayoutEffect,
   useCallback,
+  useMemo,
 } from 'react';
 import {
   View,
@@ -17,6 +18,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../../core/presentation/navigation/types';
 import { useUsersViewModel } from '../viewmodels/useUsersViewModel';
 import { useAuthViewModel } from '../../../auth/presentation/viewmodels/useAuthViewModel';
+import { useConversations } from '../../../chat/presentation/hooks/useConversations';
 import { Avatar } from '../../../core/presentation/components/Avatar';
 import { UnreadBadge } from '../../../core/presentation/components/UnreadBadge';
 import { ThemeToggle } from '../../../core/presentation/components/ThemeToggle';
@@ -67,11 +69,25 @@ export const UsersScreen: React.FC<Props> = ({ navigation }) => {
   const { users, isLoading, loadUsers, refreshUsers } = useUsersViewModel();
   const { logout } = useAuthViewModel();
   const { unreadCounts, markConversationAsRead } = useUnreadCounts();
+  const {
+    conversations,
+    isLoading: conversationsLoading,
+    refreshConversations,
+  } = useConversations();
   const { theme } = useTheme();
   const { t } = useLanguage();
 
   // For custom modal implementation (alternative):
   const [showLogoutModal, setShowLogoutModal] = useState<boolean>(false);
+
+  // Create a map of conversations by user ID for quick lookup
+  const conversationsByUserId = useMemo(() => {
+    const map = new Map();
+    conversations.forEach(conv => {
+      map.set(conv.conversationWith.id, conv);
+    });
+    return map;
+  }, [conversations]);
 
   const handleLogout = useCallback(() => {
     setShowLogoutModal(true);
@@ -108,9 +124,15 @@ export const UsersScreen: React.FC<Props> = ({ navigation }) => {
     navigation.navigate('Chat', { user });
   };
 
+  const onRefresh = () => {
+    refreshUsers();
+    refreshConversations();
+  };
+
   const renderUser = ({ item }: { item: UserSummary }) => {
     const unreadCount = unreadCounts[item.id] || 0;
     const hasUnreadMessages = unreadCount > 0;
+    const conversation = conversationsByUserId.get(item.id);
 
     return (
       <TouchableOpacity
@@ -136,9 +158,23 @@ export const UsersScreen: React.FC<Props> = ({ navigation }) => {
           >
             {item.name}
           </Text>
-          <Text style={[styles.userStatus, { color: theme.text.tertiary }]}>
-            {item.online ? t('users.status.online') : t('users.status.offline')}
-          </Text>
+
+          {conversation ? (
+            <Text
+              style={[styles.lastMessage, { color: theme.text.secondary }]}
+              numberOfLines={1}
+            >
+              {conversation.lastMessage.isFromMe &&
+                `${t('users.lastMessage.you')}: `}
+              {conversation.lastMessage.body}
+            </Text>
+          ) : (
+            <Text style={[styles.userStatus, { color: theme.text.tertiary }]}>
+              {item.online
+                ? t('users.status.online')
+                : t('users.status.offline')}
+            </Text>
+          )}
         </View>
 
         <View style={styles.badgeContainer}>
@@ -164,8 +200,8 @@ export const UsersScreen: React.FC<Props> = ({ navigation }) => {
         data={users}
         renderItem={renderUser}
         keyExtractor={item => item.id}
-        refreshing={isLoading}
-        onRefresh={refreshUsers}
+        refreshing={isLoading || conversationsLoading}
+        onRefresh={onRefresh}
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
             <Text style={[styles.emptyText, { color: theme.text.tertiary }]}>
@@ -234,6 +270,11 @@ const styles = StyleSheet.create({
   },
   userStatus: {
     ...typography.caption,
+  },
+  lastMessage: {
+    ...typography.caption,
+    fontStyle: 'italic',
+    lineHeight: 16,
   },
   emptyContainer: {
     padding: spacing.xxl,

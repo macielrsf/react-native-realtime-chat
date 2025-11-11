@@ -119,6 +119,17 @@ export class ChatSocketHandler {
           .to(recipientSocketId)
           .emit("unreadCounts:updated", { unreadCounts });
 
+        // Send conversation update to recipient (for last message)
+        this.io.to(recipientSocketId).emit("conversation:updated", {
+          userId: socket.userId,
+          lastMessage: {
+            id: message.id,
+            body: message.body,
+            createdAt: message.createdAt,
+            isFromCurrentUser: false,
+          },
+        });
+
         // Mark as delivered
         await this.chatService.markAsDelivered(message.id);
 
@@ -131,6 +142,17 @@ export class ChatSocketHandler {
 
       // Send confirmation to sender
       socket.emit("message:new", { message });
+
+      // Send conversation update to sender (for last message in their list)
+      socket.emit("conversation:updated", {
+        userId: toUserId,
+        lastMessage: {
+          id: message.id,
+          body: message.body,
+          createdAt: message.createdAt,
+          isFromCurrentUser: true,
+        },
+      });
 
       logger.info(`Message sent from ${socket.userId} to ${toUserId}`);
     } catch (error) {

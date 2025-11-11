@@ -130,4 +130,31 @@ export class ChatController {
       next(error);
     }
   };
+
+  getConversationsWithLastMessage = async (
+    req: AuthRequest,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void> => {
+    try {
+      if (!req.user) {
+        return res.status(401).json({
+          status: "error",
+          message: "Unauthorized",
+        });
+      }
+
+      const conversations =
+        await this.chatService.getUserConversationsWithLastMessage(
+          req.user.userId
+        );
+
+      return res.json({
+        status: "success",
+        data: conversations,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
 }

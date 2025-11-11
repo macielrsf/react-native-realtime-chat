@@ -11,6 +11,20 @@ export interface MessageDto {
   createdAt: string;
 }
 
+export interface ConversationDto {
+  conversationWith: {
+    id: string;
+    name: string;
+    username: string;
+  };
+  lastMessage: {
+    id: string;
+    body: string;
+    createdAt: string;
+    isFromMe: boolean;
+  };
+}
+
 export class ChatApi {
   constructor(private readonly httpClient: HttpClient) {}
 
@@ -27,5 +41,9 @@ export class ChatApi {
     return this.httpClient.get<MessageDto[]>(`/api/chat/${userId}/messages`, {
       params,
     });
+  }
+
+  async getConversationsWithLastMessage(): Promise<ConversationDto[]> {
+    return this.httpClient.get<ConversationDto[]>('/api/chat/conversations');
   }
 }

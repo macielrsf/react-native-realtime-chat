@@ -1,6 +1,7 @@
 // frontend/src/chat/infrastructure/repositories/ChatRepositoryHttp.ts
 import { ChatRepository } from '../../domain/repositories/ChatRepository';
 import { Message } from '../../domain/entities/Message';
+import { ConversationSummary } from '../../application/GetConversationsUseCase';
 import { ChatApi } from '../http/ChatApi';
 import { ChatMapper } from '../mappers/ChatMapper';
 import { SocketClient } from '../ws/SocketClient';
@@ -30,7 +31,7 @@ export class ChatRepositoryHttp implements ChatRepository {
         }
       }, 5000);
 
-      const currentHandlers = this.socketClient['handlers'];
+      const currentHandlers = this.socketClient.handlers;
       const originalOnMessageNew = currentHandlers.onMessageNew;
 
       this.socketClient.setHandlers({
@@ -55,5 +56,9 @@ export class ChatRepositoryHttp implements ChatRepository {
 
       this.socketClient.sendMessage(toUserId, body);
     });
+  }
+
+  async getConversationsWithLastMessage(): Promise<ConversationSummary[]> {
+    return this.chatApi.getConversationsWithLastMessage();
   }
 }

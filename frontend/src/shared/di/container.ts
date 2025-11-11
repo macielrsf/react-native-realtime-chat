@@ -20,6 +20,7 @@ import { ChatApi } from '../../chat/infrastructure/http/ChatApi';
 import { ChatRepositoryHttp } from '../../chat/infrastructure/repositories/ChatRepositoryHttp';
 import { LoadHistoryUseCase } from '../../chat/application/LoadHistoryUseCase';
 import { SendMessageUseCase } from '../../chat/application/SendMessageUseCase';
+import { GetConversationsUseCase } from '../../chat/application/GetConversationsUseCase';
 import { UnreadCountApi } from '../../chat/infrastructure/http/UnreadCountApi';
 import {
   GetUnreadCountsUseCase,
@@ -50,6 +51,7 @@ class DIContainer {
   private readonly chatRepository: ChatRepositoryHttp;
   public readonly loadHistoryUseCase: LoadHistoryUseCase;
   public readonly sendMessageUseCase: SendMessageUseCase;
+  public readonly getConversationsUseCase: GetConversationsUseCase;
 
   // Unread Count
   private readonly unreadCountApi: UnreadCountApi;
@@ -86,6 +88,9 @@ class DIContainer {
     );
     this.loadHistoryUseCase = new LoadHistoryUseCase(this.chatRepository);
     this.sendMessageUseCase = new SendMessageUseCase(this.chatRepository);
+    this.getConversationsUseCase = new GetConversationsUseCase(
+      this.chatRepository,
+    );
 
     // Unread Count
     this.unreadCountApi = new UnreadCountApi(this.httpClient);
