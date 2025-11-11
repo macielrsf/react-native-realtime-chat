@@ -18,7 +18,7 @@ import { useUnreadCounts } from '../../../shared/hooks/useUnreadCounts';
 import { MessageBubble } from '../../../core/presentation/components/MessageBubble';
 import { TypingIndicator } from '../../../core/presentation/components/TypingIndicator';
 import { Message } from '../../domain/entities/Message';
-import { colors } from '../../../core/presentation/theme/colors';
+import { useTheme } from '../../../core/presentation/theme/ThemeContext';
 import { spacing } from '../../../core/presentation/theme/spacing';
 import { typography } from '../../../core/presentation/theme/typography';
 
@@ -32,8 +32,9 @@ export const ChatScreen: React.FC<Props> = ({ route }) => {
   const { user } = route.params;
   const [inputText, setInputText] = useState('');
   const flatListRef = useRef<FlatList>(null);
-  const typingTimeoutRef = useRef<number>();
+  const typingTimeoutRef = useRef<number | null>(null);
   const { markConversationAsRead } = useUnreadCounts();
+  const { theme } = useTheme();
 
   const {
     messages,
@@ -99,13 +100,18 @@ export const ChatScreen: React.FC<Props> = ({ route }) => {
 
   return (
     <KeyboardAvoidingView
-      style={styles.container}
+      style={[styles.container, { backgroundColor: theme.background }]}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
     >
       {isLoading && messages.length === 0 ? (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={colors.primary} />
+        <View
+          style={[
+            styles.loadingContainer,
+            { backgroundColor: theme.background },
+          ]}
+        >
+          <ActivityIndicator size="large" color={theme.primary} />
         </View>
       ) : (
         <FlatList
@@ -118,25 +124,47 @@ export const ChatScreen: React.FC<Props> = ({ route }) => {
         />
       )}
 
-      <View style={styles.inputContainer}>
+      <View
+        style={[
+          styles.inputContainer,
+          { borderTopColor: theme.border, backgroundColor: theme.background },
+        ]}
+      >
         <RNTextInput
-          style={styles.input}
+          style={[
+            styles.input,
+            { borderColor: theme.border, color: theme.text.primary },
+          ]}
           value={inputText}
           onChangeText={handleTextChange}
           placeholder="Type a message..."
-          placeholderTextColor={colors.text.tertiary}
+          placeholderTextColor={theme.text.tertiary}
           multiline
           maxLength={1000}
         />
         <TouchableOpacity
           style={[
             styles.sendButton,
+            {
+              backgroundColor: inputText.trim() ? theme.primary : theme.surface,
+            },
             !inputText.trim() && styles.sendButtonDisabled,
           ]}
           onPress={handleSend}
           disabled={!inputText.trim()}
         >
-          <Text style={styles.sendButtonText}>Send</Text>
+          <Text
+            style={[
+              styles.sendButtonText,
+              {
+                color: inputText.trim()
+                  ? theme.text.inverse
+                  : theme.text.secondary,
+              },
+            ]}
+          >
+            Send
+          </Text>
         </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>
@@ -146,7 +174,6 @@ export const ChatScreen: React.FC<Props> = ({ route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
   },
   loadingContainer: {
     flex: 1,
@@ -161,23 +188,18 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
     padding: spacing.md,
     borderTopWidth: 1,
-    borderTopColor: colors.border,
-    backgroundColor: colors.background,
   },
   input: {
     flex: 1,
     ...typography.body,
     borderWidth: 1,
-    borderColor: colors.border,
     borderRadius: 20,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
     marginRight: spacing.sm,
     maxHeight: 100,
-    backgroundColor: colors.surface,
   },
   sendButton: {
-    backgroundColor: colors.primary,
     borderRadius: 20,
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.sm,
@@ -190,7 +212,6 @@ const styles = StyleSheet.create({
   },
   sendButtonText: {
     ...typography.body,
-    color: colors.text.inverse,
     fontWeight: '600',
   },
 });

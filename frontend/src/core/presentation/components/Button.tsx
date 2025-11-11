@@ -6,7 +6,7 @@ import {
   StyleSheet,
   ActivityIndicator,
 } from 'react-native';
-import { colors } from '../theme/colors';
+import { useTheme } from '../theme/ThemeContext';
 import { spacing } from '../theme/spacing';
 import { typography } from '../theme/typography';
 
@@ -25,19 +25,41 @@ export const Button: React.FC<ButtonProps> = ({
   disabled = false,
   variant = 'primary',
 }) => {
+  const { theme } = useTheme();
   const isDisabled = disabled || loading;
+
+  const getBackgroundColor = () => {
+    switch (variant) {
+      case 'primary':
+        return theme.primary;
+      case 'secondary':
+        return theme.secondary;
+      case 'danger':
+        return theme.danger;
+      default:
+        return theme.primary;
+    }
+  };
+
+  const getTextColor = () => {
+    return theme.text.inverse;
+  };
 
   return (
     <TouchableOpacity
-      style={[styles.button, styles[variant], isDisabled && styles.disabled]}
+      style={[
+        styles.button,
+        { backgroundColor: getBackgroundColor() },
+        isDisabled && styles.disabled,
+      ]}
       onPress={onPress}
       disabled={isDisabled}
       activeOpacity={0.7}
     >
       {loading ? (
-        <ActivityIndicator color={colors.text.inverse} />
+        <ActivityIndicator color={theme.text.inverse} />
       ) : (
-        <Text style={[styles.text, styles[`${variant}Text`]]}>{title}</Text>
+        <Text style={[styles.text, { color: getTextColor() }]}>{title}</Text>
       )}
     </TouchableOpacity>
   );
@@ -52,29 +74,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     minHeight: 48,
   },
-  primary: {
-    backgroundColor: colors.primary,
-  },
-  secondary: {
-    backgroundColor: colors.secondary,
-  },
-  danger: {
-    backgroundColor: colors.danger,
-  },
   disabled: {
     opacity: 0.5,
   },
   text: {
     ...typography.body,
     fontWeight: '600',
-  },
-  primaryText: {
-    color: colors.text.inverse,
-  },
-  secondaryText: {
-    color: colors.text.inverse,
-  },
-  dangerText: {
-    color: colors.text.inverse,
   },
 });

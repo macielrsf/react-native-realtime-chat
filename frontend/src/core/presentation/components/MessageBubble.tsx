@@ -2,7 +2,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Message } from '../../../chat/domain/entities/Message';
-import { colors } from '../theme/colors';
+import { useTheme } from '../theme/ThemeContext';
 import { spacing } from '../theme/spacing';
 import { typography } from '../theme/typography';
 
@@ -15,18 +15,29 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
   message,
   isFromMe,
 }) => {
+  const { theme } = useTheme();
+
   return (
     <View style={[styles.container, isFromMe ? styles.sent : styles.received]}>
       <View
         style={[
           styles.bubble,
+          {
+            backgroundColor: isFromMe
+              ? theme.message.sent
+              : theme.message.received,
+          },
           isFromMe ? styles.bubbleSent : styles.bubbleReceived,
         ]}
       >
         <Text
           style={[
             styles.text,
-            isFromMe ? styles.textSent : styles.textReceived,
+            {
+              color: isFromMe
+                ? theme.message.sentText
+                : theme.message.receivedText,
+            },
           ]}
         >
           {message.body}
@@ -34,7 +45,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
         <Text
           style={[
             styles.time,
-            isFromMe ? styles.timeSent : styles.timeReceived,
+            isFromMe ? styles.timeSent : { color: theme.text.tertiary },
           ]}
         >
           {message.createdAt.toLocaleTimeString([], {
@@ -65,21 +76,13 @@ const styles = StyleSheet.create({
     borderRadius: 16,
   },
   bubbleSent: {
-    backgroundColor: colors.message.sent,
     borderBottomRightRadius: 4,
   },
   bubbleReceived: {
-    backgroundColor: colors.message.received,
     borderBottomLeftRadius: 4,
   },
   text: {
     ...typography.body,
-  },
-  textSent: {
-    color: colors.message.sentText,
-  },
-  textReceived: {
-    color: colors.message.receivedText,
   },
   time: {
     ...typography.small,
@@ -87,8 +90,5 @@ const styles = StyleSheet.create({
   },
   timeSent: {
     color: 'rgba(255, 255, 255, 0.7)',
-  },
-  timeReceived: {
-    color: colors.text.tertiary,
   },
 });

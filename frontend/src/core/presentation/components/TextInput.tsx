@@ -1,7 +1,7 @@
 // frontend/src/core/presentation/components/TextInput.tsx
 import React from 'react';
 import { TextInput as RNTextInput, StyleSheet, View, Text } from 'react-native';
-import { colors } from '../theme/colors';
+import { useTheme } from '../theme/ThemeContext';
 import { spacing } from '../theme/spacing';
 import { typography } from '../theme/typography';
 
@@ -26,20 +26,35 @@ export const TextInput: React.FC<TextInputProps> = ({
   autoCapitalize = 'none',
   keyboardType = 'default',
 }) => {
+  const { theme } = useTheme();
+
   return (
     <View style={styles.container}>
-      {label && <Text style={styles.label}>{label}</Text>}
+      {label && (
+        <Text style={[styles.label, { color: theme.text.secondary }]}>
+          {label}
+        </Text>
+      )}
       <RNTextInput
-        style={[styles.input, error && styles.inputError]}
+        style={[
+          styles.input,
+          {
+            borderColor: error ? theme.danger : theme.border,
+            backgroundColor: theme.background,
+            color: theme.text.primary,
+          },
+        ]}
         value={value}
         onChangeText={onChangeText}
         placeholder={placeholder}
-        placeholderTextColor={colors.text.tertiary}
+        placeholderTextColor={theme.text.tertiary}
         secureTextEntry={secureTextEntry}
         autoCapitalize={autoCapitalize}
         keyboardType={keyboardType}
       />
-      {error && <Text style={styles.error}>{error}</Text>}
+      {error && (
+        <Text style={[styles.error, { color: theme.danger }]}>{error}</Text>
+      )}
     </View>
   );
 };
@@ -50,24 +65,17 @@ const styles = StyleSheet.create({
   },
   label: {
     ...typography.caption,
-    color: colors.text.secondary,
     marginBottom: spacing.xs,
   },
   input: {
     ...typography.body,
     borderWidth: 1,
-    borderColor: colors.border,
     borderRadius: 8,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
-    backgroundColor: colors.background,
-  },
-  inputError: {
-    borderColor: colors.danger,
   },
   error: {
     ...typography.small,
-    color: colors.danger,
     marginTop: spacing.xs,
   },
 });

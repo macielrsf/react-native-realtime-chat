@@ -12,7 +12,7 @@ import {
 import { TextInput } from '../../../core/presentation/components/TextInput';
 import { Button } from '../../../core/presentation/components/Button';
 import { useAuthViewModel } from '../viewmodels/useAuthViewModel';
-import { colors } from '../../../core/presentation/theme/colors';
+import { useTheme } from '../../../core/presentation/theme/ThemeContext';
 import { spacing } from '../../../core/presentation/theme/spacing';
 import { typography } from '../../../core/presentation/theme/typography';
 
@@ -20,6 +20,7 @@ export const LoginScreen: React.FC = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const { login, isLoading, error } = useAuthViewModel();
+  const { theme } = useTheme();
 
   const handleLogin = async () => {
     if (!username.trim() || !password.trim()) {
@@ -37,7 +38,7 @@ export const LoginScreen: React.FC = () => {
 
   return (
     <KeyboardAvoidingView
-      style={styles.container}
+      style={[styles.container, { backgroundColor: theme.background }]}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <ScrollView
@@ -45,8 +46,12 @@ export const LoginScreen: React.FC = () => {
         keyboardShouldPersistTaps="handled"
       >
         <View style={styles.header}>
-          <Text style={styles.title}>Welcome Back</Text>
-          <Text style={styles.subtitle}>Sign in to continue</Text>
+          <Text style={[styles.title, { color: theme.text.primary }]}>
+            Welcome Back
+          </Text>
+          <Text style={[styles.subtitle, { color: theme.text.secondary }]}>
+            Sign in to continue
+          </Text>
         </View>
 
         <View style={styles.form}>
@@ -76,7 +81,6 @@ export const LoginScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
   },
   scrollContent: {
     flexGrow: 1,
@@ -88,12 +92,10 @@ const styles = StyleSheet.create({
   },
   title: {
     ...typography.title,
-    color: colors.text.primary,
     marginBottom: spacing.xs,
   },
   subtitle: {
     ...typography.body,
-    color: colors.text.secondary,
   },
   form: {
     gap: spacing.md,

@@ -1,7 +1,7 @@
 // frontend/src/core/presentation/components/Avatar.tsx
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { colors } from '../theme/colors';
+import { useTheme } from '../theme/ThemeContext';
 
 interface AvatarProps {
   name: string;
@@ -10,6 +10,8 @@ interface AvatarProps {
 }
 
 export const Avatar: React.FC<AvatarProps> = ({ name, size = 40, online }) => {
+  const { theme } = useTheme();
+
   const initials = name
     .split(' ')
     .map(word => word[0])
@@ -21,15 +23,33 @@ export const Avatar: React.FC<AvatarProps> = ({ name, size = 40, online }) => {
     <View
       style={[
         styles.container,
-        { width: size, height: size, borderRadius: size / 2 },
+        {
+          width: size,
+          height: size,
+          borderRadius: size / 2,
+          backgroundColor: theme.primary,
+        },
       ]}
     >
-      <Text style={[styles.text, { fontSize: size * 0.4 }]}>{initials}</Text>
+      <Text
+        style={[
+          styles.text,
+          {
+            fontSize: size * 0.4,
+            color: theme.text.inverse,
+          },
+        ]}
+      >
+        {initials}
+      </Text>
       {online !== undefined && (
         <View
           style={[
             styles.badge,
-            { backgroundColor: online ? colors.online : colors.offline },
+            {
+              backgroundColor: online ? theme.online : theme.offline,
+              borderColor: theme.background,
+            },
             {
               width: size * 0.25,
               height: size * 0.25,
@@ -44,13 +64,11 @@ export const Avatar: React.FC<AvatarProps> = ({ name, size = 40, online }) => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
     position: 'relative',
   },
   text: {
-    color: colors.text.inverse,
     fontWeight: '600',
   },
   badge: {
@@ -58,6 +76,5 @@ const styles = StyleSheet.create({
     bottom: 0,
     right: 0,
     borderWidth: 2,
-    borderColor: colors.background,
   },
 });

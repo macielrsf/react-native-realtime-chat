@@ -1,7 +1,7 @@
 // frontend/src/core/presentation/components/UnreadBadge.tsx
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { colors } from '../theme/colors';
+import { useTheme } from '../theme/ThemeContext';
 import { typography } from '../theme/typography';
 
 interface UnreadBadgeProps {
@@ -15,6 +15,8 @@ export const UnreadBadge: React.FC<UnreadBadgeProps> = ({
   maxCount = 99,
   size = 'medium',
 }) => {
+  const { theme } = useTheme();
+
   if (count <= 0) {
     return null;
   }
@@ -34,8 +36,23 @@ export const UnreadBadge: React.FC<UnreadBadgeProps> = ({
   };
 
   return (
-    <View style={[styles.badge, sizeStyles[size]]}>
-      <Text style={[styles.badgeText, textSizeStyles[size]]}>
+    <View
+      style={[
+        styles.badge,
+        sizeStyles[size],
+        {
+          backgroundColor: theme.danger,
+          borderColor: theme.background,
+        },
+      ]}
+    >
+      <Text
+        style={[
+          styles.badgeText,
+          textSizeStyles[size],
+          { color: theme.text.inverse },
+        ]}
+      >
         {displayCount}
       </Text>
     </View>
@@ -44,7 +61,6 @@ export const UnreadBadge: React.FC<UnreadBadgeProps> = ({
 
 const styles = StyleSheet.create({
   badge: {
-    backgroundColor: colors.danger,
     borderRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',
@@ -52,7 +68,6 @@ const styles = StyleSheet.create({
     top: -6,
     right: -6,
     borderWidth: 2,
-    borderColor: colors.background,
   },
   badgeSmall: {
     minWidth: 18,
@@ -71,7 +86,6 @@ const styles = StyleSheet.create({
   },
   badgeText: {
     ...typography.caption,
-    color: colors.text.inverse,
     fontWeight: '700',
     textAlign: 'center',
   },

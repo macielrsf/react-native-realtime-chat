@@ -1,11 +1,12 @@
 // frontend/src/core/presentation/components/TypingIndicator.tsx
 import React, { useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, Animated } from 'react-native';
-import { colors } from '../theme/colors';
+import { useTheme } from '../theme/ThemeContext';
 import { spacing } from '../theme/spacing';
 import { typography } from '../theme/typography';
 
 export const TypingIndicator: React.FC = () => {
+  const { theme } = useTheme();
   const opacity1 = useRef(new Animated.Value(0.3)).current;
   const opacity2 = useRef(new Animated.Value(0.3)).current;
   const opacity3 = useRef(new Animated.Value(0.3)).current;
@@ -51,11 +52,26 @@ export const TypingIndicator: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Typing</Text>
+      <Text style={[styles.text, { color: theme.text.tertiary }]}>Typing</Text>
       <View style={styles.dots}>
-        <Animated.View style={[styles.dot, { opacity: opacity1 }]} />
-        <Animated.View style={[styles.dot, { opacity: opacity2 }]} />
-        <Animated.View style={[styles.dot, { opacity: opacity3 }]} />
+        <Animated.View
+          style={[
+            styles.dot,
+            { opacity: opacity1, backgroundColor: theme.text.tertiary },
+          ]}
+        />
+        <Animated.View
+          style={[
+            styles.dot,
+            { opacity: opacity2, backgroundColor: theme.text.tertiary },
+          ]}
+        />
+        <Animated.View
+          style={[
+            styles.dot,
+            { opacity: opacity3, backgroundColor: theme.text.tertiary },
+          ]}
+        />
       </View>
     </View>
   );
@@ -70,7 +86,6 @@ const styles = StyleSheet.create({
   },
   text: {
     ...typography.caption,
-    color: colors.text.tertiary,
     marginRight: spacing.xs,
   },
   dots: {
@@ -81,6 +96,5 @@ const styles = StyleSheet.create({
     width: 6,
     height: 6,
     borderRadius: 3,
-    backgroundColor: colors.text.tertiary,
   },
 });

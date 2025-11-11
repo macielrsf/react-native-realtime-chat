@@ -14,9 +14,10 @@ import { useUsersViewModel } from '../viewmodels/useUsersViewModel';
 import { useAuthViewModel } from '../../../auth/presentation/viewmodels/useAuthViewModel';
 import { Avatar } from '../../../core/presentation/components/Avatar';
 import { UnreadBadge } from '../../../core/presentation/components/UnreadBadge';
+import { ThemeToggle } from '../../../core/presentation/components/ThemeToggle';
 import { useUnreadCounts } from '../../../shared/hooks/useUnreadCounts';
 import { UserSummary } from '../../domain/entities/UserSummary';
-import { colors } from '../../../core/presentation/theme/colors';
+import { useTheme } from '../../../core/presentation/theme/ThemeContext';
 import { spacing } from '../../../core/presentation/theme/spacing';
 import { typography } from '../../../core/presentation/theme/typography';
 
@@ -29,35 +30,47 @@ interface Props {
   navigation: UsersScreenNavigationProp;
 }
 
-const LogoutButton: React.FC<{ onPress: () => void }> = ({ onPress }) => (
-  <TouchableOpacity
-    onPress={onPress}
-    style={styles.logoutButton}
-    activeOpacity={0.7}
-  >
-    <Text style={styles.logoutText}>Logout</Text>
-  </TouchableOpacity>
+const LogoutButton: React.FC<{ onPress: () => void }> = ({ onPress }) => {
+  const { theme } = useTheme();
+
+  return (
+    <TouchableOpacity
+      onPress={onPress}
+      style={styles.logoutButton}
+      activeOpacity={0.7}
+    >
+      <Text style={[styles.logoutText, { color: theme.danger }]}>Logout</Text>
+    </TouchableOpacity>
+  );
+};
+
+const HeaderRight: React.FC<{ onLogout: () => void }> = ({ onLogout }) => (
+  <View style={styles.headerRight}>
+    <ThemeToggle />
+    <LogoutButton onPress={onLogout} />
+  </View>
 );
 
 export const UsersScreen: React.FC<Props> = ({ navigation }) => {
   const { users, isLoading, loadUsers, refreshUsers } = useUsersViewModel();
   const { logout } = useAuthViewModel();
   const { unreadCounts, markConversationAsRead } = useUnreadCounts();
+  const { theme } = useTheme();
 
   const handleLogout = React.useCallback(() => {
     logout();
   }, [logout]);
 
-  const logoutButton = React.useMemo(
-    () => <LogoutButton onPress={handleLogout} />,
+  const headerRight = React.useMemo(
+    () => <HeaderRight onLogout={handleLogout} />,
     [handleLogout],
   );
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerRight: () => logoutButton,
+      headerRight: () => headerRight,
     });
-  }, [navigation, logoutButton]);
+  }, [navigation, headerRight]);
 
   useEffect(() => {
     loadUsers();
@@ -75,27 +88,35 @@ export const UsersScreen: React.FC<Props> = ({ navigation }) => {
 
     return (
       <TouchableOpacity
-        style={[styles.userItem, hasUnreadMessages && styles.userItemUnread]}
+        style={[
+          styles.userItem,
+          { borderBottomColor: theme.surface },
+          hasUnreadMessages && { backgroundColor: theme.surface + '40' },
+        ]}
         onPress={() => handleUserPress(item)}
         activeOpacity={0.7}
       >
         <View style={styles.avatarContainer}>
           <Avatar name={item.name} size={50} online={item.online} />
-          <UnreadBadge count={unreadCount} size="medium" />
         </View>
 
         <View style={styles.userInfo}>
           <Text
             style={[
               styles.userName,
+              { color: theme.text.primary },
               hasUnreadMessages && styles.userNameUnread,
             ]}
           >
             {item.name}
           </Text>
-          <Text style={styles.userStatus}>
+          <Text style={[styles.userStatus, { color: theme.text.tertiary }]}>
             {item.online ? 'Online' : 'Offline'}
           </Text>
+        </View>
+
+        <View style={styles.badgeContainer}>
+          <UnreadBadge count={unreadCount} size="large" />
         </View>
       </TouchableOpacity>
     );
@@ -103,14 +124,16 @@ export const UsersScreen: React.FC<Props> = ({ navigation }) => {
 
   if (isLoading && users.length === 0) {
     return (
-      <View style={styles.centerContainer}>
-        <ActivityIndicator size="large" color={colors.primary} />
+      <View
+        style={[styles.centerContainer, { backgroundColor: theme.background }]}
+      >
+        <ActivityIndicator size="large" color={theme.primary} />
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
       <FlatList
         data={users}
         renderItem={renderUser}
@@ -119,7 +142,9 @@ export const UsersScreen: React.FC<Props> = ({ navigation }) => {
         onRefresh={refreshUsers}
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
-            <Text style={styles.emptyText}>No users found</Text>
+            <Text style={[styles.emptyText, { color: theme.text.tertiary }]}>
+              No users found
+            </Text>
           </View>
         }
       />
@@ -128,24 +153,26 @@ export const UsersScreen: React.FC<Props> = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
+  headerRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginRight: spacing.xs,
+  },
   container: {
     flex: 1,
-    backgroundColor: colors.background,
   },
   centerContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: colors.background,
   },
   logoutButton: {
-    marginRight: spacing.md,
+    marginLeft: spacing.sm,
     paddingHorizontal: spacing.sm,
     paddingVertical: spacing.xs,
   },
   logoutText: {
     ...typography.body,
-    color: colors.danger,
     fontWeight: '600',
   },
   userItem: {
@@ -153,31 +180,28 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: spacing.md,
     borderBottomWidth: 1,
-    borderBottomColor: colors.surface,
-  },
-  userItemUnread: {
-    backgroundColor: colors.surface + '40', // Slight highlight for unread
   },
   avatarContainer: {
-    position: 'relative',
+    marginRight: spacing.md,
+  },
+  badgeContainer: {
+    marginLeft: spacing.sm,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   userInfo: {
-    marginLeft: spacing.md,
     flex: 1,
   },
   userName: {
     ...typography.body,
     fontWeight: '600',
-    color: colors.text.primary,
     marginBottom: spacing.xs,
   },
   userNameUnread: {
     fontWeight: '700',
-    color: colors.text.primary,
   },
   userStatus: {
     ...typography.caption,
-    color: colors.text.tertiary,
   },
   emptyContainer: {
     padding: spacing.xxl,
@@ -185,6 +209,5 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     ...typography.body,
-    color: colors.text.tertiary,
   },
 });
