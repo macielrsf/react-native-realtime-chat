@@ -1,5 +1,10 @@
 // frontend/src/users/presentation/screens/UsersScreen.tsx
-import React, { useEffect, useLayoutEffect } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useLayoutEffect,
+  useCallback,
+} from 'react';
 import {
   View,
   Text,
@@ -7,7 +12,6 @@ import {
   TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
-  Alert,
 } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../../core/presentation/navigation/types';
@@ -17,6 +21,7 @@ import { Avatar } from '../../../core/presentation/components/Avatar';
 import { UnreadBadge } from '../../../core/presentation/components/UnreadBadge';
 import { ThemeToggle } from '../../../core/presentation/components/ThemeToggle';
 import { LanguageSwitcher } from '../../../core/presentation/components/LanguageSwitcher';
+import { LogoutConfirmationModal } from '../../../core/presentation/components/LogoutConfirmationModal';
 import { useUnreadCounts } from '../../../shared/hooks/useUnreadCounts';
 import { UserSummary } from '../../domain/entities/UserSummary';
 import { useTheme } from '../../../core/presentation/theme/ThemeContext';
@@ -66,41 +71,21 @@ export const UsersScreen: React.FC<Props> = ({ navigation }) => {
   const { t } = useLanguage();
 
   // For custom modal implementation (alternative):
-  // const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState<boolean>(false);
 
-  const handleLogout = React.useCallback(() => {
-    // Native Alert Implementation (Current)
-    Alert.alert(
-      t('users.logout.confirmTitle'),
-      t('users.logout.confirmMessage'),
-      [
-        {
-          text: t('users.logout.cancelButton'),
-          style: 'cancel',
-        },
-        {
-          text: t('users.logout.confirmButton'),
-          style: 'destructive',
-          onPress: () => {
-            logout();
-          },
-        },
-      ],
-    );
-
-    // Alternative: Custom Modal Implementation
-    // setShowLogoutModal(true);
-  }, [logout, t]);
+  const handleLogout = useCallback(() => {
+    setShowLogoutModal(true);
+  }, []);
 
   // For custom modal implementation:
-  // const confirmLogout = () => {
-  //   setShowLogoutModal(false);
-  //   logout();
-  // };
+  const confirmLogout = () => {
+    setShowLogoutModal(false);
+    logout();
+  };
 
-  // const cancelLogout = () => {
-  //   setShowLogoutModal(false);
-  // };
+  const cancelLogout = () => {
+    setShowLogoutModal(false);
+  };
 
   const headerRight = React.useMemo(
     () => <HeaderRight onLogout={handleLogout} />,
@@ -188,6 +173,12 @@ export const UsersScreen: React.FC<Props> = ({ navigation }) => {
             </Text>
           </View>
         }
+      />
+
+      <LogoutConfirmationModal
+        visible={showLogoutModal}
+        onConfirm={confirmLogout}
+        onCancel={cancelLogout}
       />
     </View>
   );

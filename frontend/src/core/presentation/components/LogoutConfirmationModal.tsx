@@ -33,7 +33,7 @@ export const LogoutConfirmationModal: React.FC<
       onRequestClose={onCancel}
     >
       <Pressable style={styles.modalOverlay} onPress={onCancel}>
-        <View
+        <Pressable
           style={[
             styles.modalContent,
             {
@@ -41,6 +41,7 @@ export const LogoutConfirmationModal: React.FC<
               borderColor: theme.border,
             },
           ]}
+          onPress={() => {}} // Prevents modal from closing when tapping content
         >
           <Text style={[styles.title, { color: theme.text.primary }]}>
             {t('users.logout.confirmTitle')}
@@ -79,7 +80,7 @@ export const LogoutConfirmationModal: React.FC<
               </Text>
             </TouchableOpacity>
           </View>
-        </View>
+        </Pressable>
       </Pressable>
     </Modal>
   );
