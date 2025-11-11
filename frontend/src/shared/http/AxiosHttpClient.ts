@@ -34,14 +34,16 @@ export class AxiosHttpClient implements HttpClient {
   private setupInterceptors(): void {
     // Response interceptor para capturar erros 401
     this.axiosInstance.interceptors.response.use(
-      (response) => response,
+      response => response,
       (error: AxiosError) => {
         if (error.response?.status === 401) {
-          console.warn('Token expirado ou inválido - redirecionando para login');
+          console.warn(
+            'Token expirado ou inválido - redirecionando para login',
+          );
           this.onUnauthorized?.();
         }
         return Promise.reject(error);
-      }
+      },
     );
   }
 
