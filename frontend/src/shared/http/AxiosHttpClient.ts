@@ -32,38 +32,81 @@ export class AxiosHttpClient implements HttpClient {
   }
 
   private setupInterceptors(): void {
-    // Response interceptor para capturar erros 401
+    // Response interceptor para capturar erros
     this.axiosInstance.interceptors.response.use(
       response => response,
       (error: AxiosError) => {
+        // Erro 401 - não autorizado
         if (error.response?.status === 401) {
           console.warn(
             'Token expirado ou inválido - redirecionando para login',
           );
           this.onUnauthorized?.();
         }
+
+        // Network Error - problemas de conexão
+        if (error.message === 'Network Error' || !error.response) {
+          console.error('Network Error - possíveis causas:');
+          console.error('1. Backend não está rodando');
+          console.error('2. URL incorreta:', error.config?.url);
+          console.error('3. Problema de CORS');
+          console.error('4. Sem conexão com a internet');
+        }
+
         return Promise.reject(error);
       },
     );
   }
 
   async get<T>(url: string, config?: any): Promise<T> {
-    const response = await this.axiosInstance.get(url, config);
-    return response.data.data || response.data;
+    try {
+      const response = await this.axiosInstance.get(url, config);
+      return response.data.data || response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const message = error.response?.data?.message || error.message;
+        throw new Error(message);
+      }
+      throw error;
+    }
   }
 
   async post<T>(url: string, data?: any, config?: any): Promise<T> {
-    const response = await this.axiosInstance.post(url, data, config);
-    return response.data.data || response.data;
+    try {
+      const response = await this.axiosInstance.post(url, data, config);
+      return response.data.data || response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const message = error.response?.data?.message || error.message;
+        throw new Error(message);
+      }
+      throw error;
+    }
   }
 
   async put<T>(url: string, data?: any, config?: any): Promise<T> {
-    const response = await this.axiosInstance.put(url, data, config);
-    return response.data.data || response.data;
+    try {
+      const response = await this.axiosInstance.put(url, data, config);
+      return response.data.data || response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const message = error.response?.data?.message || error.message;
+        throw new Error(message);
+      }
+      throw error;
+    }
   }
 
   async delete<T>(url: string, config?: any): Promise<T> {
-    const response = await this.axiosInstance.delete(url, config);
-    return response.data.data || response.data;
+    try {
+      const response = await this.axiosInstance.delete(url, config);
+      return response.data.data || response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const message = error.response?.data?.message || error.message;
+        throw new Error(message);
+      }
+      throw error;
+    }
   }
 }

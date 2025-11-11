@@ -8,9 +8,12 @@ import {
   Platform,
   ScrollView,
   Alert,
+  SafeAreaView,
 } from 'react-native';
 import { TextInput } from '../../../core/presentation/components/TextInput';
 import { Button } from '../../../core/presentation/components/Button';
+import { ThemeToggle } from '../../../core/presentation/components/ThemeToggle';
+import { LanguageSwitcher } from '../../../core/presentation/components/LanguageSwitcher';
 import { useAuthViewModel } from '../viewmodels/useAuthViewModel';
 import { useTheme } from '../../../core/presentation/theme/ThemeContext';
 import { useLanguage } from '../../../shared/i18n';
@@ -42,56 +45,80 @@ export const LoginScreen: React.FC = () => {
   };
 
   return (
-    <KeyboardAvoidingView
-      style={[styles.container, { backgroundColor: theme.background }]}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    <SafeAreaView
+      style={[styles.safeArea, { backgroundColor: theme.background }]}
     >
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        keyboardShouldPersistTaps="handled"
+      <KeyboardAvoidingView
+        style={[styles.container, { backgroundColor: theme.background }]}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
-        <View style={styles.header}>
-          <Text style={[styles.title, { color: theme.text.primary }]}>
-            {t('auth.login.title')}
-          </Text>
-          <Text style={[styles.subtitle, { color: theme.text.secondary }]}>
-            {t('auth.login.subtitle')}
-          </Text>
+        {/* Header controls - Theme and Language */}
+        <View style={styles.headerControls}>
+          <LanguageSwitcher />
+          <ThemeToggle />
         </View>
 
-        <View style={styles.form}>
-          <TextInput
-            label={t('auth.login.username')}
-            value={username}
-            onChangeText={setUsername}
-            placeholder={t('auth.login.usernamePlace')}
-            autoCapitalize="none"
-          />
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View style={styles.header}>
+            <Text style={[styles.title, { color: theme.text.primary }]}>
+              {t('auth.login.title')}
+            </Text>
+            <Text style={[styles.subtitle, { color: theme.text.secondary }]}>
+              {t('auth.login.subtitle')}
+            </Text>
+          </View>
 
-          <TextInput
-            label={t('auth.login.password')}
-            value={password}
-            onChangeText={setPassword}
-            placeholder={t('auth.login.passwordPlace')}
-            secureTextEntry
-          />
+          <View style={styles.form}>
+            <TextInput
+              label={t('auth.login.username')}
+              value={username}
+              onChangeText={setUsername}
+              placeholder={t('auth.login.usernamePlace')}
+              autoCapitalize="none"
+            />
 
-          <Button
-            title={
-              isLoading ? t('auth.login.signInLoading') : t('auth.login.signIn')
-            }
-            onPress={handleLogin}
-            loading={isLoading}
-          />
-        </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+            <TextInput
+              label={t('auth.login.password')}
+              value={password}
+              onChangeText={setPassword}
+              placeholder={t('auth.login.passwordPlace')}
+              secureTextEntry
+            />
+
+            <Button
+              title={
+                isLoading
+                  ? t('auth.login.signInLoading')
+                  : t('auth.login.signIn')
+              }
+              onPress={handleLogin}
+              loading={isLoading}
+            />
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+  },
   container: {
     flex: 1,
+  },
+  headerControls: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    paddingHorizontal: spacing.md,
+    paddingTop: spacing.xs,
+    paddingBottom: spacing.xs,
+    gap: spacing.sm,
   },
   scrollContent: {
     flexGrow: 1,
