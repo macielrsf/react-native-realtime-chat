@@ -38,10 +38,16 @@ export class AxiosHttpClient implements HttpClient {
       (error: AxiosError) => {
         // Erro 401 - não autorizado
         if (error.response?.status === 401) {
-          console.warn(
-            'Token expirado ou inválido - redirecionando para login',
-          );
-          this.onUnauthorized?.();
+          // Ignorar erro 401 na rota de login (credenciais inválidas)
+          // Apenas acionar logout automático para outras rotas (token expirado)
+          const isLoginRoute = error.config?.url?.includes('/auth/login');
+
+          if (!isLoginRoute) {
+            console.warn(
+              'Token expirado ou inválido - redirecionando para login',
+            );
+            this.onUnauthorized?.();
+          }
         }
 
         // Network Error - problemas de conexão

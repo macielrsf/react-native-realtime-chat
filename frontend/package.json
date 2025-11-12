@@ -10,10 +10,10 @@
     "test": "npx jest",
     "test:unit": "npx jest --testPathPattern=__tests__/unit",
     "test:integration": "npx jest --testPathPattern=__tests__/integration",
-    "test:e2e:build:ios": "detox build --configuration ios.sim.debug",
-    "test:e2e:build:android": "detox build --configuration android.emu.debug",
-    "test:e2e:ios": "detox test --configuration ios.sim.debug",
-    "test:e2e:android": "detox test --configuration android.emu.debug",
+    "test:e2e:build:ios": "npx detox build --configuration ios.sim.debug",
+    "test:e2e:build:android": "npx detox build --configuration android.emu.debug",
+    "test:e2e:ios": "npx detox test --configuration ios.sim.debug",
+    "test:e2e:android": "npx detox test --configuration android.emu.debug",
     "test:coverage": "npx jest --coverage"
   },
   "dependencies": {
