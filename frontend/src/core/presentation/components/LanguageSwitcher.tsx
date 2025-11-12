@@ -42,6 +42,7 @@ export const LanguageSwitcher: React.FC = () => {
   return (
     <>
       <TouchableOpacity
+        testID="language-switcher"
         style={styles.button}
         onPress={() => setModalVisible(true)}
         activeOpacity={0.7}

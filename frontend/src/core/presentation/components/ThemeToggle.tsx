@@ -8,6 +8,7 @@ export const ThemeToggle: React.FC = () => {
 
   return (
     <TouchableOpacity
+      testID="theme-toggle"
       style={[
         styles.button,
         { backgroundColor: theme.surface, borderColor: theme.border },

@@ -6,6 +6,7 @@ Uma aplicação de chat em tempo real full-stack construída com **React Native*
 
 ## 📋 Índice
 
+- [Demonstração](#-demonstração)
 - [Visão Geral da Arquitetura](#visão-geral-da-arquitetura)
 - [Stack Tecnológica](#stack-tecnológica)
 - [Estrutura do Projeto](#estrutura-do-projeto)
@@ -17,6 +18,39 @@ Uma aplicação de chat em tempo real full-stack construída com **React Native*
 - [Funcionalidades](#funcionalidades)
 - [Testes](#testes)
 - [Solução de Problemas](#solução-de-problemas)
+
+---
+
+## 🎬 Demonstração
+
+### Vídeo Demo
+
+<!-- Opção 1: GIF animado (recomendado) -->
+<!-- Converta o vídeo para GIF usando: ffmpeg -i assets/demo.mp4 -vf "fps=10,scale=320:-1:flags=lanczos" assets/demo.gif -->
+<!-- ![Demo da Aplicação](./assets/demo.gif) -->
+
+<!-- Opção 2: Link para vídeo -->
+
+[📹 Assistir Demo (MP4)](./assets/demo.mp4)
+
+<!-- Opção 3: Tag HTML5 (funciona em alguns visualizadores) -->
+<details>
+<summary>🎥 Visualizar Demo Inline</summary>
+
+<video width="100%" controls>
+  <source src="./assets/demo.mp4" type="video/mp4">
+  <p>Seu navegador não suporta a tag de vídeo. <a href="./assets/demo.mp4">Clique aqui para baixar o vídeo</a>.</p>
+</video>
+
+</details>
+
+### Screenshots
+
+<div align="center">
+  <img src="./assets/screenshots/login.png" alt="Tela de Login" width="30%" />
+  <img src="./assets/screenshots/users.png" alt="Lista de Usuários" width="30%" />
+  <img src="./assets/screenshots/chat.png" alt="Tela de Chat" width="30%" />
+</div>
 
 ---
 

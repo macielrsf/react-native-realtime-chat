@@ -73,6 +73,7 @@ export const LoginScreen: React.FC = () => {
 
           <View style={styles.form}>
             <TextInput
+              testID="username-input"
               label={t('auth.login.username')}
               value={username}
               onChangeText={setUsername}
@@ -81,6 +82,7 @@ export const LoginScreen: React.FC = () => {
             />
 
             <TextInput
+              testID="password-input"
               label={t('auth.login.password')}
               value={password}
               onChangeText={setPassword}
@@ -89,6 +91,7 @@ export const LoginScreen: React.FC = () => {
             />
 
             <Button
+              testID="login-button"
               title={
                 isLoading
                   ? t('auth.login.signInLoading')

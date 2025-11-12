@@ -16,6 +16,7 @@ interface ButtonProps {
   loading?: boolean;
   disabled?: boolean;
   variant?: 'primary' | 'secondary' | 'danger';
+  testID?: string;
 }
 
 export const Button: React.FC<ButtonProps> = ({
@@ -24,6 +25,7 @@ export const Button: React.FC<ButtonProps> = ({
   loading = false,
   disabled = false,
   variant = 'primary',
+  testID,
 }) => {
   const { theme } = useTheme();
   const isDisabled = disabled || loading;
@@ -47,6 +49,7 @@ export const Button: React.FC<ButtonProps> = ({
 
   return (
     <TouchableOpacity
+      testID={testID}
       style={[
         styles.button,
         { backgroundColor: getBackgroundColor() },

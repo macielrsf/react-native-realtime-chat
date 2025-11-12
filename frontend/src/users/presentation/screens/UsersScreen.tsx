@@ -129,13 +129,20 @@ export const UsersScreen: React.FC<Props> = ({ navigation }) => {
     refreshConversations();
   };
 
-  const renderUser = ({ item }: { item: UserSummary }) => {
+  const renderUser = ({
+    item,
+    index,
+  }: {
+    item: UserSummary;
+    index: number;
+  }) => {
     const unreadCount = unreadCounts[item.id] || 0;
     const hasUnreadMessages = unreadCount > 0;
     const conversation = conversationsByUserId.get(item.id);
 
     return (
       <TouchableOpacity
+        testID={`user-item-${index}`}
         style={[
           styles.userItem,
           { borderBottomColor: theme.surface },
@@ -197,6 +204,7 @@ export const UsersScreen: React.FC<Props> = ({ navigation }) => {
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       <FlatList
+        testID="users-list"
         data={users}
         renderItem={renderUser}
         keyExtractor={item => item.id}

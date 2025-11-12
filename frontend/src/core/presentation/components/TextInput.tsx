@@ -14,6 +14,7 @@ interface TextInputProps {
   error?: string;
   autoCapitalize?: 'none' | 'sentences' | 'words' | 'characters';
   keyboardType?: 'default' | 'email-address' | 'numeric' | 'phone-pad';
+  testID?: string;
 }
 
 export const TextInput: React.FC<TextInputProps> = ({
@@ -25,6 +26,7 @@ export const TextInput: React.FC<TextInputProps> = ({
   error,
   autoCapitalize = 'none',
   keyboardType = 'default',
+  testID,
 }) => {
   const { theme } = useTheme();
 
@@ -36,6 +38,7 @@ export const TextInput: React.FC<TextInputProps> = ({
         </Text>
       )}
       <RNTextInput
+        testID={testID}
         style={[
           styles.input,
           {

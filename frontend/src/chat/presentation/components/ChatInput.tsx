@@ -100,6 +100,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
         </TouchableOpacity>
 
         <RNTextInput
+          testID="chat-input"
           ref={inputRef}
           style={[
             styles.input,
@@ -123,6 +124,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
         />
 
         <TouchableOpacity
+          testID="send-button"
           style={[
             styles.sendButton,
             {
