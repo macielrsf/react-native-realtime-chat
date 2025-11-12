@@ -677,8 +677,8 @@ npm run android
 
 ### Segurança
 
-- Tokens JWT expiram em **15 minutos** (configurável em `backend/.env`)
-- Refresh tokens expiram em **7 dias**
+- Tokens JWT expiram em **30 dias** (configurável em `backend/.env`)
+- Refresh tokens expiram em **90 dias**
 - Senhas hasheadas com **bcrypt** (10 salt rounds)
 - CORS habilitado para desenvolvimento
 - Helmet.js para cabeçalhos de segurança HTTP
