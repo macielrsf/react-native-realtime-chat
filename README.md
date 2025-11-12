@@ -25,17 +25,8 @@ Uma aplicação de chat em tempo real full-stack construída com **React Native*
 
 ### Vídeo Demo
 
-<!-- Opção 1: GIF animado (recomendado) -->
-<!-- Converta o vídeo para GIF usando: ffmpeg -i assets/demo.mp4 -vf "fps=10,scale=320:-1:flags=lanczos" assets/demo.gif -->
-<!-- ![Demo da Aplicação](./assets/demo.gif) -->
-
 <!-- Opção 2: Link para vídeo -->
-
-[📹 Assistir Demo (MP4)](./assets/demo.mp4)
-
-<!-- Opção 3: Tag HTML5 (funciona em alguns visualizadores) -->
-<details>
-<summary>🎥 Visualizar Demo Inline</summary>
+[📹 Assistir Demo (MP4)](https://github.com/user-attachments/assets/bc21a490-6e95-4d4a-a195-3dbd14d4ca02)
 
 <video width="100%" controls>
   <source src="./assets/demo.mp4" type="video/mp4">
